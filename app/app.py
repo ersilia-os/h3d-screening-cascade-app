@@ -60,6 +60,7 @@ model_keys = [
 
 # Load models
 
+@st.cache_resource
 def load_models():
     models = {}
     models_dir = os.path.join(ROOT, "..", "models")
