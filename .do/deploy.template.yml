@@ -1,0 +1,8 @@
+spec:
+  name: h3d-screening-cascade-app
+  services:
+  - dockerfile_path: Dockerfile
+    git:
+      branch: main
+      repo_clone_url: https://github.com/ersilia-os/h3d-screening-cascade-app.git
+    name: h3d-screening-cascade-app
