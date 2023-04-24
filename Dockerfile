@@ -4,7 +4,7 @@ WORKDIR .
 
 COPY . .
 RUN python -m pip install --upgrade pip
-RUN python -m pip install streamlit==1.11
+RUN python -m pip install streamlit
 RUN git clone https://github.com/ersilia-os/compound-embedding-lite
 RUN python -m pip install -e compound-embedding-lite/.
 RUN python -m pip install flaml
