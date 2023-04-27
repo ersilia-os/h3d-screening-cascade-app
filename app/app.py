@@ -71,17 +71,13 @@ def load_models():
             models[mn] = joblib.load(os.path.join(models_dir, fn))
     return models
 
-@st.cache_data
+@st.cache_resource
 def load_precalculations():
-    df = pd.read_csv(os.path.join(ROOT, "..", "data", "precalculations.csv"))
-    data = {}
-    columns = list(df.columns)[1:]
-    for c in columns:
-        data[c] = df[c].tolist()
-    return data
+    trf, columns = joblib.load(os.path.join(ROOT, "..", "data", "precalculations_quantizer.joblib"))
+    return trf, columns
 
 models = load_models()
-precalcs = load_precalculations()
+trf_precalcs, columns_precalcs = load_precalculations()
 embedder = ErsiliaCompoundEmbeddings()
 
 # Side bar
@@ -152,11 +148,11 @@ if is_valid_input_molecules():
         if k in models:
             v = models[k]
             results[k] = list(v.predict_proba(X)[:,1])
-            results[k+"_norm"] = [percentileofscore(precalcs[k], x) for x in results[k]]
         else:
             results[k] = [None]*X.shape[0]
-            results[k+"_norm"] = [None]*X.shape[0]
     data = pd.DataFrame(results)
+    data_precalcs = pd.DataFrame(trf_precalcs.transform(data[columns_precalcs]), columns=[x+"_norm" for x in columns_precalcs])*100
+    data = pd.concat([data, data_precalcs], axis=1)
     
     for v in data.iterrows():
         idx = v[0]
