@@ -1,0 +1,2 @@
+data/precalculations.csv filter=lfs diff=lfs merge=lfs -text
+data/reference_library.csv filter=lfs diff=lfs merge=lfs -text
