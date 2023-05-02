@@ -140,7 +140,6 @@ def get_molecule_image(smiles):
 
 
 if is_valid_input_molecules():
-    st.header("Input molecules")
     X = embedder.transform(input_molecules)
     results = collections.OrderedDict()
     results["smiles"] = input_molecules
@@ -153,9 +152,26 @@ if is_valid_input_molecules():
     data = pd.DataFrame(results)
     data_precalcs = pd.DataFrame(trf_precalcs.transform(data[columns_precalcs]), columns=[x+"_norm" for x in columns_precalcs])*100
     data = pd.concat([data, data_precalcs], axis=1)
-    
+
+    #Download predictions
+    columns = [x for x in list(data.columns) if not x.endswith("_norm")]
+    data_csv = data[columns].rename(columns=model_names)
+
+    @st.cache_data
+    def convert_df(df):
+        return df.to_csv(index=False).encode("utf-8")
+
+    csv = convert_df(data_csv)
+
+    st.download_button(
+        "Download as CSV", csv, "predictions.csv", "text/csv", key="download-csv"
+    )
+
+
+    #Display predictions
+    st.header("Input molecules")
     for v in data.iterrows():
-        idx = v[0]
+        idx = v[0] +1 #Index from 1
         r = v[1]
         st.markdown("### {0}: `{1}`".format(idx, r["smiles"]))
         cols = st.columns(5)
@@ -190,18 +206,6 @@ if is_valid_input_molecules():
         ]
         cols[4].text("\n".join(texts))
 
-    columns = [x for x in list(data.columns) if not x.endswith("_norm")]
-    data = data[columns].rename(columns=model_names)
-
-    @st.cache_data
-    def convert_df(df):
-        return df.to_csv(index=False).encode("utf-8")
-
-    csv = convert_df(data)
-
-    st.download_button(
-        "Download as CSV", csv, "predictions.csv", "text/csv", key="download-csv"
-    )
 
 else:
     st.markdown("Input molecules as a list of SMILES strings. For example:")
