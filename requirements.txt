@@ -2,3 +2,4 @@ streamlit==1.52.2
 flaml==2.3.6
 rdkit==2023.9.5
 eosce==0.2.0
+distutils
